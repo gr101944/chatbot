@@ -1,4 +1,5 @@
 const {WaterfallDialog, ComponentDialog } = require('botbuilder-dialogs');
+const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 const {ConfirmPrompt, ChoicePrompt, DateTimePrompt, NumberPrompt, TextPrompt  } = require('botbuilder-dialogs');
 
@@ -92,17 +93,17 @@ class ContactHR extends ComponentDialog {
         var probBrief = step.result.value
 
         await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + " \n \n eMail sent to People Team. You can continue with your search...")
+        await this.sendSuggestedActions6(step.context);
         endDialog = true;
         return await step.endDialog();   
     
     }
+    async sendSuggestedActions6(turnContext) {
+        var reply = MessageFactory.suggestedActions(['People', 'IT Services', 'Not sure', 'Cancel']);
+        await turnContext.sendActivity(reply);
+    }
 
 
-// async noOfParticipantsValidator(promptContext) {
-//     console.log(promptContext.recognized.value)
-//     // This condition is our validation rule. You can also change the value at this point.
-//     return promptContext.recognized.succeeded && promptContext.recognized.value > 1 && promptContext.recognized.value < 150;
-// }
 
     async isDialogComplete(){
         return endDialog;
