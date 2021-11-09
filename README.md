@@ -1,6 +1,6 @@
 # PEOPLEBOT
 
-Make reservations for a restaurant 
+Searches Directories based on input and escalates to departments if user is not satisfied 
 
 This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
 
