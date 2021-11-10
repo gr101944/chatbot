@@ -1,4 +1,5 @@
 const {WaterfallDialog, ComponentDialog } = require('botbuilder-dialogs');
+const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 const {ConfirmPrompt, ChoicePrompt, DateTimePrompt, NumberPrompt, TextPrompt  } = require('botbuilder-dialogs');
 
@@ -48,7 +49,7 @@ class ContactITServices extends ComponentDialog {
     async getProblemArea(step) {
         console.log ("In getProblemArea")
 
-        var problemArea = ["Benefits", "Covid", "Training", "Vacation", "Cancel"]
+        var problemArea = ["Equipment", "Policies", "Access Related", "Software", "Cancel"]
 
         endDialog = false;
         // Running a prompt here means the next WaterfallStep will be run when the users response is received.
@@ -59,33 +60,32 @@ class ContactITServices extends ComponentDialog {
     async getProblemBrief(step){
         console.log ("In getProblemBrief")        
        // console.log(step.result)
-        if(step.result === "Cancel")
-        { 
-            await step.context.sendActivity("You chose to cancel");
-            endDialog = true;
-            return await step.endDialog();   
-        } else{
+        step.values.probArea = step.result.value
         
-        var problemBrief= ["Result not useful", "Need more info", "No Results", "Timed out", "Cancel"]
+        var problemBrief= ["Results not useful", "Need more info", "No Results", "Timed out", "Cancel"]
 
         return await step.prompt(CHOICE_PROMPT, 'What is the problem brief?', problemBrief);
-        }
+        
         
     }
 
     async sendEmail(step){
-        await step.context.sendActivity("eMail sent to IT Services and they will get back to you as soon as possible. You can continue with your search...")
+        console.log ("In sendEmail") 
+        console.log (step.values.probArea)
+        var probBrief = step.result.value
+
+        await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + " \n \n eMail sent to IT Services Team. You can continue with your search...")
+        await this.sendSuggestedActions7(step.context);
         endDialog = true;
         return await step.endDialog();   
     
     }
 
 
-// async noOfParticipantsValidator(promptContext) {
-//     console.log(promptContext.recognized.value)
-//     // This condition is our validation rule. You can also change the value at this point.
-//     return promptContext.recognized.succeeded && promptContext.recognized.value > 1 && promptContext.recognized.value < 150;
-// }
+    async sendSuggestedActions7(turnContext) {
+        var reply = MessageFactory.suggestedActions(['People', 'IT Services', 'Not sure', 'Cancel']);
+        await turnContext.sendActivity(reply);
+    }
 
     async isDialogComplete(){
         return endDialog;
