@@ -92,9 +92,7 @@
             "apiVersion": "2018-05-01",
             "name": "storageDeployment",
             "resourceGroup": "[parameters('groupName')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('groupName'))]"
-            ],
+
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -120,9 +118,7 @@
                             "apiVersion": "2015-08-01",
                             "location": "[variables('resourcesLocation')]",
                             "kind": "app",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
-                            ],
+ 
                             "name": "[variables('webAppName')]",
                             "properties": {
                                 "name": "[variables('webAppName')]",
@@ -169,10 +165,8 @@
                                 "developerAppInsightKey": null,
                                 "publishingCredentials": null,
                                 "storageResourceId": null
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
-                            ]
+                            }
+
                         }
                     ],
                     "outputs": {}
