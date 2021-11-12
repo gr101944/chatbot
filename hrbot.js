@@ -5,7 +5,7 @@ const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 const { ContactHR } = require('./componentDialogs/contactHR');
 const { ContactITServices } = require('./componentDialogs/contactITServices');
-const { CancelReservationDialog } = require('./componentDialogs/cancelReservationDialog')
+
 const {LuisRecognizer, QnAMaker}  = require('botbuilder-ai');
 
 const CHOICE_PROMPT    = 'CHOICE_PROMPT';
@@ -26,7 +26,7 @@ class hrbot extends ActivityHandler {
         this.dialogState = conversationState.createProperty("dialogState");
         this.contactHRDialog = new ContactHR(this.conversationState,this.userState);
         this.contactITServicesDialog = new ContactITServices(this.conversationState,this.userState);
-        this.cancelReservationDialog = new CancelReservationDialog(this.conversationState,this.userState);   
+        
         
         this.previousIntent = this.conversationState.createProperty("previousIntent");
         this.conversationData = this.conversationState.createProperty('conservationData');        
@@ -138,7 +138,12 @@ class hrbot extends ActivityHandler {
             var dept = entities.department[0]
             console.log ("Department chosen: "+ dept)
             await this.conversationData.set(context,{deptSaved: dept});
-            await context.sendActivity("Sure. Ask your question, we will forage the " + dept.toUpperCase() + " repositories.");
+            if (dept === "not sure"){
+                await context.sendActivity("Sure. Ask your question, we will forage all repositories. This however is not prgrammed yet");
+            } else{
+                await context.sendActivity("Sure. Ask your question, we will forage the " + dept.toUpperCase() + " repositories.");
+            }
+            
           
 
         }
@@ -146,6 +151,14 @@ class hrbot extends ActivityHandler {
             console.log ("in askQuestion intent")
 
             await context.sendActivity("Sure. Please choose the department...");
+            await this.sendSuggestedActions(context);
+          
+
+        }
+        if(intent == "greetingIntent" ){
+            console.log ("in greetingIntent intent")
+
+            await context.sendActivity("Hello! I am ready to answer your query to the best of my ability. Please choose the department and ask a question...");
             await this.sendSuggestedActions(context);
           
 
@@ -257,6 +270,7 @@ class hrbot extends ActivityHandler {
             if (currentIntent === "contactHR"){
                 console.log ("In contactHR intent")
                 await this.conversationData.set(context,{endDialog: false});
+                await this.conversationData.set(context,{contactPeopleDone: false});
                 console.log ("reached here 1")
                 await this.contactHRDialog.run(context,this.dialogState,entities);
                 console.log ("Reached here 2")
@@ -287,7 +301,7 @@ class hrbot extends ActivityHandler {
             if  ((intent == "doneIntent") || (intent == "cancelIntent")){
                 console.log ("In done  / cancel intent " + JSON.stringify(intent))
 
-                await context.sendActivity("Bye");
+                await context.sendActivity("Bye now... just say Hello to wake me up again!");
                 
             }
 
